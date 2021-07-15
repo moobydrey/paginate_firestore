@@ -26,19 +26,22 @@ class PaginationCubit extends Cubit<PaginationState> {
   void filterPaginatedList(String searchTerm) {
     if (state is PaginationLoaded) {
       final loadedState = state as PaginationLoaded;
+      final localQuery = _getQuery();
+      localQuery.snapshots().listen((querySnapshot) {
+        var filteredList;
+        if (searchTerm == 'all') {
+          filteredList = querySnapshot.docs;
+        } else {
+          filteredList = loadedState.documentSnapshots
+              .where((document) => document.data().toString().toLowerCase().contains(searchTerm.toLowerCase()))
+              .toList();
+        }
 
-      final filteredList = loadedState.documentSnapshots
-          .where((document) => document
-              .data()
-              .toString()
-              .toLowerCase()
-              .contains(searchTerm.toLowerCase()))
-          .toList();
-
-      emit(loadedState.copyWith(
-        documentSnapshots: filteredList,
-        hasReachedEnd: loadedState.hasReachedEnd,
-      ));
+        emit(loadedState.copyWith(
+          documentSnapshots: filteredList,
+          hasReachedEnd: loadedState.hasReachedEnd,
+        ));
+      });
     }
   }
 
@@ -72,8 +75,7 @@ class PaginationCubit extends Cubit<PaginationState> {
         final querySnapshot = await localQuery.get();
         _emitPaginatedState(
           querySnapshot.docs,
-          previousList:
-              loadedState.documentSnapshots as List<QueryDocumentSnapshot>,
+          previousList: loadedState.documentSnapshots as List<QueryDocumentSnapshot>,
         );
       }
     } on PlatformException catch (exception) {
@@ -92,8 +94,7 @@ class PaginationCubit extends Cubit<PaginationState> {
       final listener = localQuery.snapshots().listen((querySnapshot) {
         _emitPaginatedState(
           querySnapshot.docs,
-          previousList:
-              loadedState.documentSnapshots as List<QueryDocumentSnapshot>,
+          previousList: loadedState.documentSnapshots as List<QueryDocumentSnapshot>,
         );
       });
 

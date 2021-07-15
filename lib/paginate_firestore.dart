@@ -133,10 +133,8 @@ class _PaginateFirestoreState extends State<PaginateFirestore> {
           });
         } else if (listener is PaginateFilterChangeListener) {
           listener.addListener(() {
-            if (listener.searchTerm.isNotEmpty) {
+            if (listener.searchTerm.isNotEmpty && listener.searchTerm != 'all') {
               _cubit!.filterPaginatedList(listener.searchTerm);
-            } else if (listener.searchTerm == '') {
-              _cubit!.fetchPaginatedList();
             } else {
               _cubit!.refreshPaginatedList();
             }

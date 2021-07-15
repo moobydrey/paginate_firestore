@@ -32,7 +32,7 @@ class PaginationCubit extends Cubit<PaginationState> {
         if (searchTerm == 'all') {
           filteredList = querySnapshot.docs;
         } else {
-          filteredList = loadedState.documentSnapshots
+          filteredList = querySnapshot.docs
               .where((document) => document.data().toString().toLowerCase().contains(searchTerm.toLowerCase()))
               .toList();
         }

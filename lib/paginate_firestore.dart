@@ -135,6 +135,8 @@ class _PaginateFirestoreState extends State<PaginateFirestore> {
           listener.addListener(() {
             if (listener.searchTerm.isNotEmpty) {
               _cubit!.filterPaginatedList(listener.searchTerm);
+            } else if (listener.searchTerm == '') {
+              _cubit!.fetchPaginatedList();
             } else {
               _cubit!.refreshPaginatedList();
             }
